@@ -1,36 +1,30 @@
 # server.R
 
-library(maps)
-library(mapproj)
-counties <- readRDS("data/counties.rds")
-source("helpers.R")
+library(shiny)
+library(datasets)
 
-shinyServer(
-  function(input, output) {
-    output$map <- renderPlot({
-      data <- switch(input$var, 
-                     "Percent White" = counties$white,
-                     "Percent Black" = counties$black,
-                     "Percent Hispanic" = counties$hispanic,
-                     "Percent Asian" = counties$asian)
-      
-      color <- switch(input$var, 
-                      "Percent White" = "darkgreen",
-                      "Percent Black" = "black",
-                      "Percent Hispanic" = "darkorange",
-                      "Percent Asian" = "darkviolet")
-      
-      legend <- switch(input$var, 
-                       "Percent White" = "% White",
-                       "Percent Black" = "% Black",
-                       "Percent Hispanic" = "% Hispanic",
-                       "Percent Asian" = "% Asian")
-      
-      percent_map(var = data, 
-                  color = color, 
-                  legend.title = legend, 
-                  max = input$range[2], 
-                  min = input$range[1])
-    })
-  }
-)
+mpgData <- mtcars
+mpgData$am <- factor(mpgData$am, labels = c("Automatic", "Manual"))
+
+# Define server logic required to plot various variables against mpg
+shinyServer(function(input, output) {
+  
+  # Compute the forumla text in a reactive expression since it is 
+  # shared by the output$caption and output$mpgPlot expressions
+  formulaText <- reactive({
+    paste("mpg ~", input$variable)
+  })
+  
+  # Return the formula text for printing as a caption
+  output$caption <- renderText({
+    formulaText()
+  })
+  
+  # Generate a plot of the requested variable against mpg and only 
+  # include outliers if requested
+  output$mpgPlot <- renderPlot({
+    boxplot(as.formula(formulaText()), 
+            data = mpgData,
+            outline = input$outliers)
+  })
+})

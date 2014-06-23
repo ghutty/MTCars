@@ -1,24 +1,28 @@
 # ui.R
 
-shinyUI(fluidPage(
-  titlePanel("censusVis"),
+library(shiny)
+
+# Define UI for miles per gallon application
+shinyUI(pageWithSidebar(
   
-  sidebarLayout(
-    sidebarPanel(
-      helpText("Create demographic maps with 
-               information from the 2010 US Census."),
-      
-      selectInput("var", 
-                  label = "Choose a variable to display",
-                  choices = c("Percent White", "Percent Black",
-                              "Percent Hispanic", "Percent Asian"),
-                  selected = "Percent White"),
-      
-      sliderInput("range", 
-                  label = "Range of interest:",
-                  min = 0, max = 100, value = c(0, 100))
-      ),
+  # Application title
+  headerPanel("Miles Per Gallon"),
+  
+  # Sidebar with controls to select the variable to plot against mpg
+  # and to specify whether outliers should be included
+  sidebarPanel(
+    selectInput("variable", "Variable:",
+                list("Cylinders" = "cyl", 
+                     "Transmission" = "am", 
+                     "Gears" = "gear")),
     
-    mainPanel(plotOutput("map"))
+    checkboxInput("outliers", "Show outliers", FALSE)
+  ),
+  
+  # Show the caption and plot of the requested variable against mpg
+  mainPanel(
+    h3(textOutput("caption")),
+    
+    plotOutput("mpgPlot")
   )
 ))
