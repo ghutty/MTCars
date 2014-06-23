@@ -2,27 +2,24 @@
 
 library(shiny)
 
-# Define UI for miles per gallon application
 shinyUI(pageWithSidebar(
+  headerPanel("Motor Trend Cars (MPG Efficient Variables)"),
   
-  # Application title
-  headerPanel("Miles Per Gallon"),
-  
-  # Sidebar with controls to select the variable to plot against mpg
-  # and to specify whether outliers should be included
   sidebarPanel(
+    helpText("Manual transmissions are more fuel efficient than Automatics.  Check other variables that affect mpg efficiency."),
     selectInput("variable", "Variable:",
-                list("Cylinders" = "cyl", 
-                     "Transmission" = "am", 
-                     "Gears" = "gear")),
-    
-    checkboxInput("outliers", "Show outliers", FALSE)
+                list("Transmission Type" = "am", 
+                     "Cylinders" = "cyl", 
+                     "Carborators" = "carb", 
+                     "Gears" = "gear"))
+
   ),
   
-  # Show the caption and plot of the requested variable against mpg
+
   mainPanel(
     h3(textOutput("caption")),
     
-    plotOutput("mpgPlot")
+    plotOutput("mpgPlot1")
+    #h5(textOutput("mpgAnova"))
   )
 ))
